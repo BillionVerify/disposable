@@ -5,3 +5,7 @@
 .DS_Store
 .idea/
 .vscode/
+# Legacy: older versions of the update workflow staged upstream lists here
+# before merging. The current script streams everything in-memory; this entry
+# is kept defensively so a stray local download never leaks into a commit.
+/.upstream/

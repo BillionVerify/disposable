@@ -1,0 +1,58 @@
+name: Hourly disposable list update
+
+# Refreshes data/domains.txt from upstream community lists (see
+# scripts/sources.json). Verifies each upstream's declared license, normalizes
+# entries, merges them with the existing list and exceptions, and — when the
+# result differs — commits the new file straight to main. No PR is opened:
+# this is an additive, data-only refresh and a stale list helps nobody.
+
+on:
+  schedule:
+    - cron: "0 * * * *" # every hour, on the hour (UTC)
+  workflow_dispatch:
+
+concurrency:
+  group: hourly-disposable-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install update dependencies
+        run: python -m pip install -r scripts/requirements.txt
+
+      - name: Refresh data/domains.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python3 scripts/merge_upstream.py \
+            --sources scripts/sources.json \
+            --existing data/domains.txt \
+            --exceptions data/exceptions.txt \
+            --output data/domains.txt
+
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- data/domains.txt; then
+            echo "no changes"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          before=$(git show HEAD:data/domains.txt | wc -l | tr -d ' ')
+          after=$(wc -l < data/domains.txt | tr -d ' ')
+          delta=$(printf "%+d" "$((after - before))")
+          git add data/domains.txt
+          git commit -m "chore: hourly disposable list update (${delta} → ${after})"
+          git push origin HEAD:main

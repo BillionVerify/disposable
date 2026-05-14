@@ -39,19 +39,37 @@ matches both the suffix itself and any subdomain. Wildcards are slower than
 exact matches (linear scan), so prefer exact entries when you can enumerate
 them.
 
-## Daily auto-merge policy
+## Hourly auto-merge policy
 
-`.github/workflows/daily-update.yml` runs every night and:
+`.github/workflows/update.yml` runs every hour and:
 
-1. Fetches upstream community lists (disposable-email-domains, mailchecker).
-2. Normalises (lowercase, IDN-to-ASCII, dedup) and drops malformed entries.
-3. Subtracts entries already in `data/exceptions.txt`.
-4. Diffs against `data/domains.txt`.
-5. Opens a PR if there are net changes.
+1. For each entry in `scripts/sources.json`, downloads the upstream's
+   `license_path` and verifies a fingerprint of the declared
+   `expected_license` is still present. License drift fails the run.
+2. Fetches each upstream's data file (text or JSON).
+3. Normalises (lowercase, IDN-to-ASCII, dedup) and drops malformed entries.
+4. Subtracts entries already in `data/exceptions.txt`.
+5. If `data/domains.txt` changed, commits the new file directly to `main`
+   with a message like `chore: hourly disposable list update (+42 → 197857)`.
 
-PRs from the daily job that **only add** domains may be auto-merged once CI is
-green. PRs that **remove** domains require human review — removals are usually
-a sign that an upstream list lost an entry, not that we should drop it.
+There is no PR step. The merge is additive by design (false positives are
+silenced via `exceptions.txt`, not by deleting upstream entries), and
+running CI on every hour-of-the-day data churn is more noise than signal.
+If you don't trust an upstream, remove it from `scripts/sources.json`.
+
+## Adding a new upstream source
+
+1. Append a block to `scripts/sources.json` with `owner`, `repo`, `ref`,
+   `data_path`, `format` (`text` or `json`), `expected_license`, and the
+   path to the upstream's license file (`license_path`). If the license is
+   declared in a non-standard file (e.g. `package.json`), add an explicit
+   `license_fingerprints` list — the script will fail unless one of those
+   substrings appears in `license_path`.
+2. Make sure `expected_license` is in the `permissive_licenses` allowlist
+   at the top of `sources.json` (MIT, BSD-2/3-Clause, 0BSD, ISC, CC0-1.0,
+   Apache-2.0, Unlicense).
+3. Add the source to `THIRD_PARTY_NOTICES.md`.
+4. Open a PR — the next hourly run will start pulling from it.
 
 ## Releasing
 

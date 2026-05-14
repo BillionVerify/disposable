@@ -1,0 +1,107 @@
+{
+  "version": 1,
+  "permissive_licenses": [
+    "MIT",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "0BSD",
+    "ISC",
+    "CC0-1.0",
+    "Apache-2.0",
+    "Unlicense"
+  ],
+  "sources": [
+    {
+      "id": "disposable-email-domains",
+      "owner": "disposable-email-domains",
+      "repo": "disposable-email-domains",
+      "ref": "master",
+      "data_path": "disposable_email_blocklist.conf",
+      "format": "text",
+      "expected_license": "CC0-1.0",
+      "license_path": "LICENSE.txt"
+    },
+    {
+      "id": "mailchecker",
+      "owner": "FGRibreau",
+      "repo": "mailchecker",
+      "ref": "master",
+      "data_path": "list.txt",
+      "format": "text",
+      "expected_license": "MIT",
+      "license_path": "LICENSE"
+    },
+    {
+      "id": "fakefilter",
+      "owner": "7c",
+      "repo": "fakefilter",
+      "ref": "main",
+      "data_path": "txt/data.txt",
+      "format": "text",
+      "expected_license": "BSD-3-Clause",
+      "license_path": "LICENSE.md"
+    },
+    {
+      "id": "amieiro",
+      "owner": "amieiro",
+      "repo": "disposable-email-domains",
+      "ref": "master",
+      "data_path": "denyDomains.txt",
+      "format": "text",
+      "expected_license": "MIT",
+      "license_path": "README.md",
+      "license_fingerprints": ["MIT license"]
+    },
+    {
+      "id": "ivolo",
+      "owner": "ivolo",
+      "repo": "disposable-email-domains",
+      "ref": "master",
+      "data_path": "index.json",
+      "format": "json",
+      "expected_license": "MIT",
+      "license_path": "package.json",
+      "license_fingerprints": ["\"license\": \"MIT\""]
+    },
+    {
+      "id": "wesbos",
+      "owner": "wesbos",
+      "repo": "burner-email-providers",
+      "ref": "master",
+      "data_path": "emails.txt",
+      "format": "text",
+      "expected_license": "MIT",
+      "license_path": "LICENSE"
+    },
+    {
+      "id": "martenson",
+      "owner": "martenson",
+      "repo": "disposable-email-domains",
+      "ref": "master",
+      "data_path": "disposable_email_blocklist.conf",
+      "format": "text",
+      "expected_license": "CC0-1.0",
+      "license_path": "LICENSE.txt"
+    },
+    {
+      "id": "groundcat",
+      "owner": "groundcat",
+      "repo": "disposable-email-domain-list",
+      "ref": "master",
+      "data_path": "domains.txt",
+      "format": "text",
+      "expected_license": "MIT",
+      "license_path": "LICENSE"
+    },
+    {
+      "id": "unkn0w",
+      "owner": "unkn0w",
+      "repo": "disposable-email-domain-list",
+      "ref": "main",
+      "data_path": "domains.txt",
+      "format": "text",
+      "expected_license": "MIT",
+      "license_path": "LICENSE"
+    }
+  ]
+}
