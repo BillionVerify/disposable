@@ -84,10 +84,44 @@ Exit codes:
 | `1` | at least one input is disposable |
 | `2` | usage / I/O error |
 
+## Data model
+
+```
+data/
+  domains.txt        # one disposable domain per line (≈ 198k entries)
+  wildcards.txt      # one suffix per line, optional `*.` prefix
+  exceptions.txt     # never-flag list (overrides domains.txt)
+```
+
+Lines starting with `#` are treated as comments. Each file is embedded into the binary at build time via `go:embed`.
+
+## Updating the disposable list
+
+Fast path — open a PR that edits the relevant file by hand:
+
+```bash
+echo new-bad-domain.example >> data/domains.txt
+sort -u -o data/domains.txt data/domains.txt
+go test ./...
+```
+
+Bulk path — the hourly GitHub Actions workflow at
+`.github/workflows/update.yml` verifies each upstream's license, pulls its
+data, normalizes (lowercase + IDN-to-ASCII + dedup), drops malformed
+entries, and commits the result straight to `main` if anything changed.
+See `CONTRIBUTING.md` for the curation policy and `scripts/sources.json`
+for the full source list.
+
+## Versioning
+
+`v0.YYYY.MMDD` patch releases ship every time the domain table changes — pin a version in `go.mod` if you need reproducibility. The Go API is stable; only the embedded data churns.
+
+See `RELEASE.md` for the pre-tag checklist.
+
 ## BillionVerify API — free disposable check
 
 If you want to skip embedding the list (e.g. you're in a stack that isn't Go,
-or you also need MX/SMTP/role/role/catch-all signals), call the BillionVerify
+or you also need MX/SMTP/role/catch-all signals), call the BillionVerify
 API directly. **Disposable detection is free** — the `is_disposable` field is
 populated on every verification response and is not metered separately.
 
@@ -143,40 +177,6 @@ func main() {
 
 Full API reference (bulk verification, file uploads, webhooks, filtering by
 `disposable=true`, credits, etc.): <https://billionverify.com/docs>.
-
-## Data model
-
-```
-data/
-  domains.txt        # one disposable domain per line (≈ 198k entries)
-  wildcards.txt      # one suffix per line, optional `*.` prefix
-  exceptions.txt     # never-flag list (overrides domains.txt)
-```
-
-Lines starting with `#` are treated as comments. Each file is embedded into the binary at build time via `go:embed`.
-
-## Updating the disposable list
-
-Fast path — open a PR that edits the relevant file by hand:
-
-```bash
-echo new-bad-domain.example >> data/domains.txt
-sort -u -o data/domains.txt data/domains.txt
-go test ./...
-```
-
-Bulk path — the hourly GitHub Actions workflow at
-`.github/workflows/update.yml` verifies each upstream's license, pulls its
-data, normalizes (lowercase + IDN-to-ASCII + dedup), drops malformed
-entries, and commits the result straight to `main` if anything changed.
-See `CONTRIBUTING.md` for the curation policy and `scripts/sources.json`
-for the full source list.
-
-## Versioning
-
-`v0.YYYY.MMDD` patch releases ship every time the domain table changes — pin a version in `go.mod` if you need reproducibility. The Go API is stable; only the embedded data churns.
-
-See `RELEASE.md` for the pre-tag checklist.
 
 ## Acknowledgements
 
