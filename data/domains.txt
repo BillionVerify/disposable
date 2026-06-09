@@ -20247,6 +20247,7 @@ ar-vids.com
 ar.a2gl.in
 ar.emltmp.com
 ar.laste.ml
+ar.su
 ar.szcdn.pl
 ar0dc0qrkla.cf
 ar0dc0qrkla.ga
@@ -140490,6 +140491,7 @@ pipiska6879.ga
 pipiska6879.gq
 pipiska6879.ml
 pipiska6879.tk
+pipmmotube.store
 pippieterskn.xyz
 pippoc.com
 pippop.cf
@@ -195880,6 +195882,7 @@ x.dc74.cf
 x.dc74.ml
 x.emailfake.ml
 x.fackme.gq
+x.frev.me
 x.host-001.eu
 x.ip6.li
 x.marrone.cf
