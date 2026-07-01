@@ -19934,6 +19934,7 @@ apidle.ga
 apidle.gq
 apidle.tk
 apiempat.xyz
+apifabric.click
 apifan.com
 apih2h.com
 apiland.pl
@@ -115044,6 +115045,7 @@ mailo.cf
 mailo.edu.pl
 mailo.icu
 mailo.my-wan.de
+mailo.ru
 mailo.tk
 mailof.com
 mailolo.info
@@ -137467,6 +137469,7 @@ ov.yomail.info
 ov3u841.com
 ovaafu.fun
 ovaclockas24.net
+ovadis.com.tr
 ovaf8g.site
 ovag.biz
 ovallo.com
@@ -164395,6 +164398,7 @@ simspec.net
 simsterling.com
 simthanhdat.net
 simtoanquoc.com
+simu.elyquin.org
 simu.solar
 simulink.cf
 simulink.ga
@@ -202241,6 +202245,7 @@ yanasway.com
 yanbex.ru
 yanbex.website
 yanbex.xyz
+yancex.ru
 yand.com
 yanddex.ru
 yande.ru
