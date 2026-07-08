@@ -15445,6 +15445,7 @@ ai.aax.cloudns.asia
 ai.edu.aiot.ze.cx
 ai.hsfz.info
 ai.vcss.eu.org
+ai100999.com
 ai108.online
 ai2111.com
 ai4000.com
@@ -207394,6 +207395,7 @@ zurtel.gq
 zurtel.ml
 zurtel.tk
 zutility.biz.id
+zutility.my.id
 zutomayo.best
 zuu.10mail.xyz
 zuuel.com
