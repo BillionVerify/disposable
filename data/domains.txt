@@ -47308,6 +47308,7 @@ corrective.opengambol.click
 corrective.openinvestmentapp.com
 corrective.religiousfestival.click
 corrective.triggerly.click
+corrective.trybillieholiday.click
 correio.monster
 correllohome.info
 correllohome.org
@@ -117885,6 +117886,7 @@ matjoa.com
 matka.host-001.eu
 matkakilpailu.com
 matkind.com
+matl.ru
 matlabalpha.com
 matmail.ru
 matmail.shop
@@ -162551,6 +162553,7 @@ service.takeatripapp.click
 service.taketriply.com
 service.thetakeatrip.click
 service.tpost.pw
+service.trybillieholiday.click
 service.trycaper.click
 service.turnon.click
 service.turnonlabs.click
