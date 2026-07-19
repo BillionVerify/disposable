@@ -118376,6 +118376,7 @@ maxpanel.id
 maxpedia.cloud
 maxpedia.ro
 maxpedia.shop
+maxpedia.web.id
 maxpeedia.com
 maxpotencja.pl
 maxprice.co
