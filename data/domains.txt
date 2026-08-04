@@ -77734,6 +77734,7 @@ ghaks.us
 ghaledu.us
 ghamil.com
 ghan.com
+ghana.com
 ghanalandbank.com
 ghania.site
 ghanun.info
@@ -116948,6 +116949,7 @@ mailus.fliplabs.click
 mailus.ga
 mailus.gambolhq.click
 mailus.getsome.click
+mailus.meetwisetransfer.click
 mailus.ninjatransfers.click
 mailus.quickreply.click
 mailus.thebillieholiday.click
