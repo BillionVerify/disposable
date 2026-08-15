@@ -3,6 +3,8 @@
 *.test
 *.out
 .DS_Store
+__pycache__/
+*.pyc
 .idea/
 .vscode/
 # Legacy: older versions of the update workflow staged upstream lists here
