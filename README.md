@@ -1,20 +1,22 @@
 # Free and Open Source Disposable Email Detection
 
-Tiny Go library + CLI that answers one question:
+Tiny Go and Rust libraries, plus a Go CLI, that answer one question:
 **"Is this email's domain a disposable / one-time mailbox?"**
 
-- **~198k** known disposable domains, merged from nine community lists and embedded into the binary (no network or disk I/O at runtime).
+- **~213k** known disposable domains, merged from nine community lists and embedded into the binary (no network or disk I/O at runtime).
 - O(1) exact-match lookup through an in-memory map; wildcard suffixes use a
   short linear scan. Safe for concurrent use.
 - **Hourly** updates from upstream lists, with per-source license verification
   on every run (see `.github/workflows/update.yml`).
 - MIT licensed.
 
-Maintained by [BillionVerify](https://billionverify.com), where this same code powers the production `/v1/verify/single` endpoint.
+Maintained by [BillionVerify](https://billionverify.com), where the same disposable-domain data powers the production `/v1/verify/disposable` endpoint.
 
 ---
 
 ## Install
+
+### Go
 
 ```bash
 go get github.com/billionverify/disposable
@@ -26,7 +28,18 @@ Or grab the CLI:
 go install github.com/billionverify/disposable/cmd/disposable-check@latest
 ```
 
+### Rust
+
+The native `disposable` crate lives in this repository. Until its first crates.io release, install it from GitHub:
+
+```toml
+[dependencies]
+disposable = { git = "https://github.com/BillionVerify/disposable.git" }
+```
+
 ## Library usage
+
+### Go
 
 ```go
 import "github.com/billionverify/disposable"
@@ -54,11 +67,39 @@ disposable.SetData(
 
 `ResetEmbedded()` reverts to the embedded list.
 
+### Rust
+
+```rust
+if disposable::is_domain("mailinator.com") {
+    // refuse, throttle, or tag as low-trust
+}
+
+if disposable::is_email("user@mailinator.com") {
+    // ...
+}
+
+println!("loaded: {} disposable domains", disposable::count());
+```
+
+Build an immutable detector from your own newline-delimited lists:
+
+```rust
+use disposable::DisposableDomains;
+
+let domains = DisposableDomains::from_lists(
+    "trashy.example\nalso-bad.example",
+    "*.tempmail.example",
+    "good.example",
+);
+
+assert!(domains.is_domain("also-bad.example"));
+```
+
 ### Lookup semantics
 
 - Input is **case-insensitive** (`MAILINATOR.com` ≡ `mailinator.com`).
 - Whitespace is stripped.
-- IDN is converted to ASCII via `golang.org/x/net/idna` before lookup.
+- IDN is converted to ASCII via `golang.org/x/net/idna` in Go and `idna` in Rust before lookup.
 - Resolution order: **exceptions → exact domain → wildcard suffix**.
 - A wildcard entry `*.foo.example` matches both `foo.example` and any subdomain (`a.foo.example`, `a.b.foo.example`).
 
@@ -73,7 +114,7 @@ $ echo user@mailinator.com | disposable-check --quiet || echo "BAD"
 BAD
 
 $ disposable-check --count
-197814
+212947
 ```
 
 Exit codes:
@@ -88,12 +129,12 @@ Exit codes:
 
 ```
 data/
-  domains.txt        # one disposable domain per line (≈ 198k entries)
+  domains.txt        # one disposable domain per line (≈ 213k entries)
   wildcards.txt      # one suffix per line, optional `*.` prefix
   exceptions.txt     # never-flag list (overrides domains.txt)
 ```
 
-Lines starting with `#` are treated as comments. Each file is embedded into the binary at build time via `go:embed`.
+Lines starting with `#` are treated as comments. Each file is embedded into the binary at build time via Go's `go:embed` and Rust's `include_str!`.
 
 ## Updating the disposable list
 
@@ -103,6 +144,7 @@ Fast path — open a PR that edits the relevant file by hand:
 echo new-bad-domain.example >> data/domains.txt
 sort -u -o data/domains.txt data/domains.txt
 go test ./...
+cargo test --all-targets
 ```
 
 Bulk path — the hourly GitHub Actions workflow at
@@ -114,39 +156,47 @@ for the full source list.
 
 ## Versioning
 
-`v0.YYYY.MMDD` patch releases ship every time the domain table changes — pin a version in `go.mod` if you need reproducibility. The Go API is stable; only the embedded data churns.
+Go `v0.YYYY.MMDD` patch releases ship when the domain table changes — pin a version in `go.mod` if you need reproducibility. The Go API is stable; only the embedded data churns.
+
+The Rust crate follows Cargo semantic versioning and starts at `0.1.0`. Its first crates.io publication remains a separate release step; this repository does not claim the package is published until that succeeds.
 
 See `RELEASE.md` for the pre-tag checklist.
 
 ## BillionVerify API — free disposable check
 
-If you want to skip embedding the list (e.g. you're in a stack that isn't Go,
-or you also need MX/SMTP/role/catch-all signals), call the BillionVerify
-API directly. **Disposable detection is free** — the `is_disposable` field is
-populated on every verification response and is not metered separately.
+- **Free:** `/v1/verify/disposable` does not consume credits.
+- **Documentation:** [Disposable Email Check API reference](https://billionverify.com/docs/api-reference#disposable-email-check).
 
-Single-email verification — `POST https://api.billionverify.com/v1/verify/single`:
+If you want to skip embedding the list, call the hosted BillionVerify endpoint directly. It performs only the disposable-domain lookup; it does not call SMTP, MX, or the verification cache.
+
+Disposable email check — `POST https://api.billionverify.com/v1/verify/disposable`:
 
 ```bash
-curl -X POST https://api.billionverify.com/v1/verify/single \
+curl -X POST https://api.billionverify.com/v1/verify/disposable \
   -H "BV-API-KEY: sk_your_key_here" \
   -H "Content-Type: application/json" \
   -d '{"email": "user@mailinator.com"}'
 ```
 
-Excerpted response:
+The endpoint also supports `GET /v1/verify/disposable?email=user%40mailinator.com`. Invalid email syntax returns HTTP 400 rather than reporting `is_disposable: false`, and `check_smtp: true` is rejected because this endpoint is lookup-only.
+
+Response:
 
 ```json
 {
-  "email": "user@mailinator.com",
-  "is_disposable": true,
-  "is_role": false,
-  "is_catchall": false,
-  "status": "invalid"
+  "success": true,
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "email": "user@mailinator.com",
+    "domain": "mailinator.com",
+    "is_disposable": true,
+    "checked_at": "2026-08-15T08:30:00Z"
+  }
 }
 ```
 
-Equivalent from Go, reusing this library's normalization:
+Equivalent from Go:
 
 ```go
 package main
@@ -154,14 +204,24 @@ package main
 import (
     "bytes"
     "encoding/json"
+    "fmt"
     "net/http"
     "os"
 )
 
+type disposableResponse struct {
+    Data struct {
+        Email        string `json:"email"`
+        Domain       string `json:"domain"`
+        IsDisposable bool   `json:"is_disposable"`
+        CheckedAt    string `json:"checked_at"`
+    } `json:"data"`
+}
+
 func main() {
     body, _ := json.Marshal(map[string]string{"email": "user@mailinator.com"})
     req, _ := http.NewRequest("POST",
-        "https://api.billionverify.com/v1/verify/single",
+        "https://api.billionverify.com/v1/verify/disposable",
         bytes.NewReader(body))
     req.Header.Set("BV-API-KEY", os.Getenv("BV_API_KEY"))
     req.Header.Set("Content-Type", "application/json")
@@ -171,12 +231,14 @@ func main() {
         panic(err)
     }
     defer resp.Body.Close()
-    json.NewDecoder(resp.Body).Decode(&struct{}{}) // parse into your own struct
+
+    var result disposableResponse
+    if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+        panic(err)
+    }
+    fmt.Println(result.Data.IsDisposable)
 }
 ```
-
-Full API reference (bulk verification, file uploads, webhooks, filtering by
-`disposable=true`, credits, etc.): <https://billionverify.com/docs>.
 
 ## Acknowledgements
 

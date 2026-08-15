@@ -1,0 +1,26 @@
+[package]
+name = "disposable"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.88"
+description = "Fast, offline disposable email domain detection with an embedded, continuously updated list"
+license = "MIT"
+repository = "https://github.com/BillionVerify/disposable"
+homepage = "https://billionverify.com"
+readme = "README.md"
+keywords = ["email", "disposable", "validation", "antispam", "offline"]
+include = [
+    "Cargo.toml",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "rust/**",
+    "tests/**",
+    "data/**",
+]
+
+[lib]
+path = "rust/src/lib.rs"
+
+[dependencies]
+idna = "1.1.0"

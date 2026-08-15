@@ -1,5 +1,6 @@
 /bin/
 /dist/
+/target/
 *.test
 *.out
 .DS_Store

@@ -1,16 +1,19 @@
 # Contributing
 
 Thanks for considering a contribution. The goal of this repo is narrow: keep an
-accurate list of disposable / one-time email domains, expose a tiny Go API around
-it, and ship daily updates without breaking downstream consumers.
+accurate list of disposable / one-time email domains, expose tiny Go and Rust
+interfaces around it, and ship frequent updates without breaking downstream
+consumers.
 
 ## Code style
 
 - Standard Go formatting (`gofmt`); CI runs `go vet` and `go test ./...`.
+- Standard Rust formatting (`cargo fmt`); CI runs Clippy, tests, and package
+  verification.
 - Public functions must have a doc comment — the package is small and every
   comment is read.
-- No new runtime dependencies without discussion. The only runtime import today
-  is `golang.org/x/net/idna`.
+- No new runtime dependencies without discussion. IDN normalization uses
+  `golang.org/x/net/idna` in Go and `idna` in Rust.
 - The upstream merge script uses Python dependencies listed in
   `scripts/requirements.txt`.
 
@@ -19,7 +22,7 @@ it, and ship daily updates without breaking downstream consumers.
 1. Add the domain to `data/domains.txt` in lowercase ASCII (use the Punycode
    form for IDN — e.g. `xn--mller-kva.example`, not `möller.example`).
 2. Re-sort: `sort -u -o data/domains.txt data/domains.txt`.
-3. Run `go test ./...`.
+3. Run `go test ./...` and `cargo test --all-targets`.
 4. Open a PR. Brief rationale in the description is enough — link to the
    provider's site if it's not obvious.
 
@@ -73,10 +76,12 @@ If you don't trust an upstream, remove it from `scripts/sources.json`.
 
 ## Releasing
 
-1. Tag a patch version once changes accumulate: `git tag v0.YYYY.MMDD && git push --tags`.
+1. For Go, tag a patch version once changes accumulate: `git tag v0.YYYY.MMDD && git push --tags`.
 2. The Go module proxy will pick it up within minutes.
+3. Rust releases follow the separate Cargo checklist in `RELEASE.md`; updating
+   the shared data does not implicitly publish a crate.
 
-There is no semver-style breaking-change tag — the API surface is intentionally
-small and frozen. If you ever need to break it, fork.
+The Go interface remains intentionally small and frozen. The Rust crate follows
+Cargo semantic versioning for any future interface changes.
 
 See `RELEASE.md` for the full release checklist.
