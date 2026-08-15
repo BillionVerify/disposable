@@ -30,11 +30,10 @@ go install github.com/billionverify/disposable/cmd/disposable-check@latest
 
 ### Rust
 
-The native `disposable` crate lives in this repository. Until its first crates.io release, install it from GitHub:
+Install the native [`disposable`](https://crates.io/crates/disposable) crate from crates.io:
 
-```toml
-[dependencies]
-disposable = { git = "https://github.com/BillionVerify/disposable.git" }
+```bash
+cargo add disposable
 ```
 
 ## Library usage
@@ -158,7 +157,7 @@ for the full source list.
 
 Go `v0.YYYY.MMDD` patch releases ship when the domain table changes — pin a version in `go.mod` if you need reproducibility. The Go API is stable; only the embedded data churns.
 
-The Rust crate follows Cargo semantic versioning and starts at `0.1.0`. Its first crates.io publication remains a separate release step; this repository does not claim the package is published until that succeeds.
+The Rust crate follows Cargo semantic versioning and is published independently on [crates.io](https://crates.io/crates/disposable).
 
 See `RELEASE.md` for the pre-tag checklist.
 
